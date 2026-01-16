@@ -546,7 +546,7 @@ const App: React.FC = () => {
             backgroundColor: '#f5f8ff'
         }}
       >
-        Multi-Email Invoice Downloader
+        Multi-Email Invoice Downloader V2
       </Typography>
 
       <Card

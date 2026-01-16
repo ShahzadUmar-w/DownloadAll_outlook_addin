@@ -7,7 +7,7 @@
   xsi:type="MailApp">
 
   <Id>bf98594e-8758-45ee-a355-46101b54b06e</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.0.1</Version>
   <ProviderName>Contoso</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="multiselect"/>
