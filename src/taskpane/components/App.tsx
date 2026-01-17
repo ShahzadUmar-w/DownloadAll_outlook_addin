@@ -569,7 +569,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
             backgroundColor: '#f5f8ff'
         }}
       >
-        Multi-Email Invoice Downloader
+        Multi-Email Invoice Downloader V3
       </Typography>
 
       <Card
