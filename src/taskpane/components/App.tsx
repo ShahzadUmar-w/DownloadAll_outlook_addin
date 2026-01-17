@@ -422,12 +422,14 @@ const App: React.FC = () => {
       Office.context.mailbox.loadItemByIdAsync(itemId, (loadResult) => {
         if (loadResult.status !== Office.AsyncResultStatus.Succeeded) {
           console.error(
-            `Failed to load item ${itemId} (Code: ${loadResult.error.code})`
+            `Failed to load item ${itemId} (Code: ${loadResult.error})`
           );
+          console.log(loadResult.error);
           return resolve([]);
         }
 
         const loadedItem: any = loadResult.value as unknown as Office.MessageRead;
+console.log("loadedItem",loadedItem);
 
         processItemBody(loadedItem)
           .then(resolve) 
@@ -444,6 +446,15 @@ const App: React.FC = () => {
       });
     });
   };
+
+// --- Utility Functions (Adding Sleep) ---
+
+/**
+ * Outlook ko thoda waqt dene ke liye 500ms ka delay.
+ */
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// ... (Baaki saare utility functions yahan hain)
 
   // Handles multiple selected items (threads or individual emails)
   const loadAndProcessSelectedItems = useCallback(() => {
@@ -465,19 +476,31 @@ const App: React.FC = () => {
       const itemIds = selectedItems.map(item => item.itemId);
       let extractedLinks: string[] = [];
 
-      // Process items sequentially to manage Mailbox resources
+      // --- CRITICAL CONFIGURATION ---
+      const DELAY_BETWEEN_ITEMS_MS = 500; // Har item ke beech 500ms ka waqfa
+
+      // Process items sequentially and introduce a delay
       for (const itemId of itemIds) {
+        console.log(`Attempting to load item: ${itemId}`);
+        
+        // Item load karo, process karo aur unload karo
         const linksFromItem = await loadAndUnloadSingleItem(itemId); 
         
         linksFromItem.forEach(link => {
             extractedLinks.push(link);
         });
+        
+        // --- YAHAN DELAY ZAROORI HAI ---
+        // Agle item ko load karne se pehle wait karo.
+        await sleep(DELAY_BETWEEN_ITEMS_MS);
       }
 
       setAllLinks(extractedLinks);
       setLoading(false);
     });
   }, []); 
+
+// ... (Rest of the component) 
 
   // Office setup and event listener
   useEffect(() => {
@@ -546,7 +569,7 @@ const App: React.FC = () => {
             backgroundColor: '#f5f8ff'
         }}
       >
-        Multi-Email Invoice Downloader V2
+        Multi-Email Invoice Downloader
       </Typography>
 
       <Card
