@@ -525,34 +525,37 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 
   // Batch Download Logic
-  const downloadAllLinks = async () => {
-    if (isProcessing) return; 
+ const downloadAllLinks = async () => {
+    if (isProcessing) return;
 
     setIsProcessing(true);
     setCurrentBatch(0);
 
     for (let i = 0; i < allLinks.length; i += BATCH_SIZE) {
         const batch = allLinks.slice(i, i + BATCH_SIZE);
-        
-        batch.forEach((link) => {
-            // Open link in a new tab/window for download
+
+        for (const link of batch) {
             const a = document.createElement("a");
             a.href = link;
             a.target = "_blank";
             a.click();
-        });
-        
+
+            // Wait 2 seconds before downloading the next link
+            await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+
         const linksProcessed = Math.min(i + BATCH_SIZE, allLinks.length);
         setCurrentBatch(linksProcessed);
-        
+
         if (linksProcessed < allLinks.length) {
-            // Wait for 10 seconds before opening the next batch
+            // Wait DELAY_MS between batches (optional)
             await new Promise(resolve => setTimeout(resolve, DELAY_MS));
         }
     }
 
     setIsProcessing(false);
-  };
+};
+
 
   // --- Attractive UI Rendering ---
   return (
